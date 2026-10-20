@@ -22,3 +22,6 @@ Maximum ten stocks, each new slot targets 10% of equity, cash allowed; use an in
 
 ## Notion experiment journal
 Completed experiments are published to Notion only by an explicit, authenticated outbound sync; local immutable registry is authoritative. See `docs/NOTION_RESEARCH_LOG.md`. Never include tokens or licensed raw datasets in journal pages.
+
+## License
+[MIT](LICENSE). Research code only; nothing here is investment advice.
