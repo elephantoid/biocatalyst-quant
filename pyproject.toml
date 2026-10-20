@@ -1,0 +1,65 @@
+[project]
+name = "biocatalyst-quant"
+version = "0.1.0"
+description = "Reproducible research for point-in-time biotech catalyst strategies"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.15",
+  "bandit>=1.8",
+  "detect-secrets>=1.5",
+  "pre-commit>=4.0",
+  "pytest>=8.3",
+  "pytest-cov>=6.0",
+  "ruff>=0.11",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "SIM", "C4", "RUF", "N", "ANN", "PT"]
+ignore = ["ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN201", "ANN001"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src"]
+strict = true
+warn_unreachable = true
+show_error_codes = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"
+markers = [
+  "integration: tests involving multiple adapters/components without live external services",
+  "external: opt-in tests requiring real external services",
+  "slow: expensive tests excluded from quick checks",
+]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["biocatalyst_quant"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 85
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError"]
