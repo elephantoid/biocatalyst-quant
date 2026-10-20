@@ -1,0 +1,82 @@
+# All checks run locally; no GitHub Actions are required.
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.13  # Upgrade intentionally alongside uv.lock
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: debug-statements
+      - id: check-ast
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: [--baseline, .secrets.baseline]
+        exclude: ^(uv\.lock|\.secrets\.baseline)$
+  - repo: local
+    hooks:
+      - id: no-local-paths
+        name: No machine-local absolute paths in tracked files
+        entry: bash -c '! git grep -nIE "/Users/|/home/[a-z]+/|/private/var" -- . ":!.pre-commit-config.yaml"'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+      - id: unit-fast
+        name: Fast unit tests
+        entry: uv run --no-sync pytest -q tests/unit
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+      - id: types-strict
+        name: Type checking (strict)
+        entry: uv run --no-sync mypy src
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+      - id: test-coverage
+        name: Full offline test suite and branch coverage
+        entry: uv run --no-sync pytest -m 'not external and not slow' --cov=biocatalyst_quant --cov-branch --cov-report=term-missing --cov-fail-under=85
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+      - id: bandit-security
+        name: Bandit static security analysis
+        entry: uv run --no-sync bandit -q -r src
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+      - id: dependency-audit
+        name: Dependency vulnerability and status audit (requires network)
+        entry: uv audit --locked
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+      - id: complete-local-gate
+        name: Complete local quality gate
+        entry: bash scripts/quality.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual]

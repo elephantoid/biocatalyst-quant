@@ -1,0 +1,32 @@
+/.venv/
+/.mypy_cache/
+/.pytest_cache/
+/.ruff_cache/
+/.coverage
+/htmlcov/
+/dist/
+/build/
+*.egg-info/
+__pycache__/
+.env
+.env.*
+!.env.example
+/data/raw/
+/data/derived/
+/artifacts/
+/notebooks/.ipynb_checkpoints/
+
+.claude/settings.local.json
+.claude/*.local.md
+
+# Local-only artifacts: never commit (see docs/DESIGN_DECISIONS.md DD-003)
+.DS_Store
+/data/
+/experiments/
+*.parquet
+*.duckdb
+*.pkl
+*.pickle
+
+# Local-only docs/prompts kept out of GitHub (moved here deliberately; see docs/STATUS.md)
+/local-docs/
